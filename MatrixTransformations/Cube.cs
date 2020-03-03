@@ -5,7 +5,6 @@ namespace MatrixTransformations
 {
     public class Cube
     {
-
         //          7----------4
         //         /|         /|
         //        / |        / |                y
