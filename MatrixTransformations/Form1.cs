@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace MatrixTransformations
@@ -59,7 +60,7 @@ namespace MatrixTransformations
             y_axis = new AxisY(200);
 
             // Create object
-            square = new Square(Color.Purple,100);
+            square = new Square(Color.Purple, 100);
 
             square2 = new Square(Color.Orange, 100);
 
@@ -74,47 +75,40 @@ namespace MatrixTransformations
 
             // Draw axes
             //  vb = vector buffer
-            vb = ViewportTransformation(x_axis.vb);
+            vb = ViewportTransformation(x_axis.vb).ToList();
             x_axis.Draw(e.Graphics, vb);
-            vb = ViewportTransformation(y_axis.vb);
+            vb = ViewportTransformation(y_axis.vb).ToList();
             y_axis.Draw(e.Graphics, vb);
 
             // Draw squares
-            vb = ViewportTransformation(square.vb);
+            vb = ViewportTransformation(square.vb).ToList();
             square.Draw(e.Graphics, vb);
-            
+
             vb.Clear();
-            var s = Matrix.ScaleMatrix(1.5f);
-            foreach (var v in square2.vb)
-            {
-                Vector v2 = s * v;
-                vb.Add(v2);
-            }
-            vb = ViewportTransformation(vb);
+
+            Matrix s = Matrix.ScaleMatrix(1.5f);
+            vb = ViewportTransformation(TransformVectors(this.square2.vb, s)).ToList();
             square2.Draw(e.Graphics, vb);
-            
+
             vb.Clear();
-            var r = Matrix.RotateMatrix(20);
-            foreach (var v in square3.vb)
-            {
-                Vector v2 = r * v;
-                vb.Add(v2);
-            }
-            vb = ViewportTransformation(vb);
+
+            Matrix r = Matrix.RotateMatrix(20);
+            vb = ViewportTransformation(TransformVectors(this.square3.vb, r)).ToList();
             square3.Draw(e.Graphics, vb);
 
             vb.Clear();
-            var t = Matrix.TranslateMatrix(75, -25);
-            foreach (var v in square4.vb)
-            {
-                Vector v2 = t * v;
-                vb.Add(v2);
-            }
-            vb = ViewportTransformation(vb);
+            Matrix t = Matrix.TranslateMatrix(75, -25);
+
+            vb = ViewportTransformation(TransformVectors(this.square4.vb, t)).ToList();
             square4.Draw(e.Graphics, vb);
         }
 
-        public List<Vector> ViewingPipeline(List<Vector> vb)
+        private static IEnumerable<Vector> TransformVectors(IEnumerable<Vector> vectors, Matrix matrix)
+        {
+            foreach (Vector v in vectors) { yield return matrix * v; }
+        }
+
+        public IEnumerable<Vector> ViewingPipeline(List<Vector> vb)
         {
             List<Vector> res = new List<Vector>();
             Vector vp = new Vector();
@@ -135,20 +129,12 @@ namespace MatrixTransformations
             return ViewportTransformation(res);
         }
 
-        public static List<Vector> ViewportTransformation(List<Vector> vb)
+        public static IEnumerable<Vector> ViewportTransformation(IEnumerable<Vector> vb)
         {
-            List<Vector> result = new List<Vector>();
+            const float cx = WIDTH  / 2;
+            const float cy = HEIGHT / 2;
 
-            float cx = WIDTH / 2;
-            float cy = HEIGHT / 2;
-
-            foreach (var v in vb)
-            {
-                Vector v2 = new Vector(v.x + cx, cy - v.y);
-                result.Add(v2);
-            }
-
-            return result;
+            foreach (Vector v in vb) { yield return new Vector(v.x + cx, cy - v.y); }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
