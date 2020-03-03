@@ -31,8 +31,8 @@ namespace MatrixTransformations
         }
 
         public Matrix(float m11, float m12, float m13,
-            float m21, float m22, float m23,
-            float m31, float m32, float m33)
+                      float m21, float m22, float m23,
+                      float m31, float m32, float m33)
         {
             mat[0, 0] = m11;
             mat[0, 1] = m12;
@@ -55,9 +55,9 @@ namespace MatrixTransformations
         }
 
         public Matrix() : this(1, 0, 0, 0,
-                                0, 1, 0, 0, 
-                                0, 0, 1, 0,
-                                0, 0, 0, 1) { }
+                               0, 1, 0, 0,
+                               0, 0, 1, 0,
+                               0, 0, 0, 1) { }
 
         public Matrix(Vector v) : this()
         {
@@ -170,6 +170,28 @@ namespace MatrixTransformations
             return $"{mat[0, 0]} , {mat[0, 1]} , {mat[0, 2]} , " +
                    $"{mat[1, 0]} , {mat[1, 1]} , {mat[1, 2]} , " +
                    $"{mat[2, 0]} , {mat[2, 1]} , {mat[2, 2]}";
+        }
+
+        public static Matrix ViewMatrix(float distToCam, float phi, float theta)
+        {
+            Matrix matrix = new Matrix();
+
+            matrix.mat[0, 0] = (float) -Math.Sin(theta);
+            matrix.mat[0, 1] = (float) Math.Cos(theta);
+            matrix.mat[1, 0] = (float) (-Math.Cos(theta) * Math.Cos(phi));
+            matrix.mat[1, 1] = (float) (-Math.Cos(phi)   * Math.Sin(theta));
+            matrix.mat[1, 2] = (float) Math.Sin(phi);
+            matrix.mat[2, 0] = (float) (Math.Cos(theta) * Math.Sin(phi));
+            matrix.mat[2, 1] = (float) (Math.Sin(theta) * Math.Sin(phi));
+            matrix.mat[2, 2] = (float) Math.Cos(phi);
+            matrix.mat[2, 3] = -distToCam;
+
+            return matrix;
+        }
+
+        public static Matrix ProjectionMatrix(float distToScreen, float distTotal)
+        {
+            return ScaleMatrix(-(distToScreen / distTotal));
         }
     }
 }

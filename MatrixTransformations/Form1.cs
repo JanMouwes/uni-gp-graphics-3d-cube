@@ -14,12 +14,7 @@ namespace MatrixTransformations
         // Axes
         AxisX x_axis;
         AxisY y_axis;
-
-        // Objects
-        Square square;
-        private Square square2;
-        private Square square3;
-        private Square square4;
+        AxisZ z_axis;
 
         // Window dimensions
         const int WIDTH = 800;
@@ -34,39 +29,10 @@ namespace MatrixTransformations
             this.DoubleBuffered = true;
             m = new Matrix();
 
-            Vector v1 = new Vector();
-            Console.WriteLine(v1);
-            Vector v2 = new Vector(1, 2);
-            Console.WriteLine(v2);
-            Vector v3 = new Vector(2, 6);
-            Console.WriteLine(v3);
-            Vector v4 = v2 + v3;
-            Console.WriteLine(v4); // 3, 8
-
-            Matrix m1 = new Matrix();
-            Console.WriteLine(m1); // 1, 0, 0, 1
-            Matrix m2 = new Matrix(
-                2, 4,
-                -1, 3);
-            Console.WriteLine(m2);
-            Console.WriteLine(m1 + m2); // 3, 4, -1, 4
-            Console.WriteLine(m1 - m2); // -1, -4, 1, -2
-            Console.WriteLine(m2 * m2); // 0, 20, -5, 5
-
-            Console.WriteLine(m2 * v3); // 28, 16
-
             // Define axes
-            x_axis = new AxisX(200);
-            y_axis = new AxisY(200);
-
-            // Create object
-            square = new Square(Color.Purple, 100);
-
-            square2 = new Square(Color.Orange, 100);
-
-            square3 = new Square(Color.Cyan, 100);
-
-            square4 = new Square(Color.DarkBlue, 100);
+            x_axis = new AxisX(3);
+            y_axis = new AxisY(3);
+            z_axis = new AxisZ(3);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -75,32 +41,19 @@ namespace MatrixTransformations
 
             // Draw axes
             //  vb = vector buffer
-            vb = ViewportTransformation(x_axis.vb).ToList();
+            vb = ViewingPipeline(x_axis.vb).ToList();
             x_axis.Draw(e.Graphics, vb);
-            vb = ViewportTransformation(y_axis.vb).ToList();
+            vb = ViewingPipeline(y_axis.vb).ToList();
             y_axis.Draw(e.Graphics, vb);
+            vb = ViewingPipeline(z_axis.vb).ToList();
+            z_axis.Draw(e.Graphics, vb);
 
-            // Draw squares
-            vb = ViewportTransformation(square.vb).ToList();
-            square.Draw(e.Graphics, vb);
+            Cube cube  = new Cube(Color.Purple);
 
-            vb.Clear();
-
-            Matrix s = Matrix.ScaleMatrix(1.5f);
-            vb = ViewportTransformation(TransformVectors(this.square2.vb, s)).ToList();
-            square2.Draw(e.Graphics, vb);
-
-            vb.Clear();
-
-            Matrix r = Matrix.RotateMatrix(20);
-            vb = ViewportTransformation(TransformVectors(this.square3.vb, r)).ToList();
-            square3.Draw(e.Graphics, vb);
-
-            vb.Clear();
-            Matrix t = Matrix.TranslateMatrix(75, -25);
-
-            vb = ViewportTransformation(TransformVectors(this.square4.vb, t)).ToList();
-            square4.Draw(e.Graphics, vb);
+            this.vb = cube.vertexbuffer;
+            this.vb = ViewingPipeline(this.vb).ToList();
+            
+            cube.Draw(e.Graphics, this.vb);
         }
 
         private static IEnumerable<Vector> TransformVectors(IEnumerable<Vector> vectors, Matrix matrix)
@@ -108,22 +61,20 @@ namespace MatrixTransformations
             foreach (Vector v in vectors) { yield return matrix * v; }
         }
 
-        public IEnumerable<Vector> ViewingPipeline(List<Vector> vb)
+        public IEnumerable<Vector> ViewingPipeline(IEnumerable<Vector> vb)
         {
             List<Vector> res = new List<Vector>();
             Vector vp = new Vector();
 
             foreach (var v in vb)
             {
-                /*
-                Matrix view = Matrix.ViewMatrix(r, phi, theta);
-                vp = view * v;
+                 Matrix view = Matrix.ViewMatrix(1, 1, 1);
+                 vp = view * v;
 
-                Matrix proj = Matrix.ProjectionMatrix(decimal, vp.z);
-                vp = proj * vp;
+                 Matrix proj = Matrix.ProjectionMatrix(100, vp.z);
+                 vp = proj * vp;
 
-                res.Add(vp);
-                */
+                 res.Add(vp);
             }
 
             return ViewportTransformation(res);
