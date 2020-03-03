@@ -18,6 +18,7 @@ namespace MatrixTransformations
         Square square;
         private Square square2;
         private Square square3;
+        private Square square4;
 
         // Window dimensions
         const int WIDTH = 800;
@@ -63,6 +64,8 @@ namespace MatrixTransformations
             square2 = new Square(Color.Orange, 100);
 
             square3 = new Square(Color.Cyan, 100);
+
+            square4 = new Square(Color.DarkBlue, 100);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -99,6 +102,16 @@ namespace MatrixTransformations
             }
             vb = ViewportTransformation(vb);
             square3.Draw(e.Graphics, vb);
+
+            vb.Clear();
+            //var r = Matrix.RotateMatrix(20);
+            foreach (var v in square4.vb)
+            {
+                Vector v2 = v;
+                vb.Add(v2);
+            }
+            vb = ViewportTransformation(vb);
+            square4.Draw(e.Graphics, vb);
         }
 
         public static List<Vector> ViewportTransformation(List<Vector> vb)
