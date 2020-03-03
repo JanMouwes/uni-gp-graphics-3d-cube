@@ -80,11 +80,19 @@ namespace MatrixTransformations
             y_axis.Draw(e.Graphics, vb);
 
             // Draw squares
-            vb = ViewportTransformation(square.vb);
+            vb.Clear();
+            var s = Matrix.ScaleMatrix(1.5f);
+            var r = Matrix.RotateMatrix(20);
+            var t = Matrix.TranslateMatrix(75, -25);
+            foreach (var v in square.vb)
+            {
+                Vector v2 = s *  r * t * v;
+                vb.Add(v2);
+            }
+            vb = ViewportTransformation(vb);
             square.Draw(e.Graphics, vb);
             
             vb.Clear();
-            var s = Matrix.ScaleMatrix(1.5f);
             foreach (var v in square2.vb)
             {
                 Vector v2 = s * v;
@@ -94,7 +102,6 @@ namespace MatrixTransformations
             square2.Draw(e.Graphics, vb);
             
             vb.Clear();
-            var r = Matrix.RotateMatrix(20);
             foreach (var v in square3.vb)
             {
                 Vector v2 = r * v;
@@ -104,7 +111,6 @@ namespace MatrixTransformations
             square3.Draw(e.Graphics, vb);
 
             vb.Clear();
-            var t = Matrix.TranslateMatrix(75, -25);
             foreach (var v in square4.vb)
             {
                 Vector v2 = t * v;
