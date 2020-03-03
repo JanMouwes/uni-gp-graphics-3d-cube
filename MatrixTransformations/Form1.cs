@@ -114,6 +114,27 @@ namespace MatrixTransformations
             square4.Draw(e.Graphics, vb);
         }
 
+        public List<Vector> ViewingPipeline(List<Vector> vb)
+        {
+            List<Vector> res = new List<Vector>();
+            Vector vp = new Vector();
+
+            foreach (var v in vb)
+            {
+                /*
+                Matrix view = Matrix.ViewMatrix(r, phi, theta);
+                vp = view * v;
+
+                Matrix proj = Matrix.ProjectionMatrix(decimal, vp.z);
+                vp = proj * vp;
+
+                res.Add(vp);
+                */
+            }
+
+            return ViewportTransformation(res);
+        }
+
         public static List<Vector> ViewportTransformation(List<Vector> vb)
         {
             List<Vector> result = new List<Vector>();
