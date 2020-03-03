@@ -93,5 +93,15 @@ namespace MatrixTransformations
             if (e.KeyCode == Keys.Escape)
                 Application.Exit();
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+
+        }
     }
 }
