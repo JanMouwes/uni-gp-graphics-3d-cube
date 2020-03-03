@@ -123,15 +123,18 @@ namespace MatrixTransformations
 
         public static Matrix TranslateMatrix(float tx, float ty)
         {
-            Matrix m = new Matrix();
-            return m;
-
+            Matrix translate = new Matrix();
+            translate.mat[0, 2] = tx;
+            translate.mat[1, 2] = ty;
+            
+            return translate;
         }
 
         public override string ToString()
         {
-            return $"{mat[0,0]} , {mat[0,1]} , " +
-                   $"{mat[1,0]} , {mat[1,1]}";
+            return $"{mat[0,0]} , {mat[0,1]} , {mat[0,2]} , " +
+                   $"{mat[1,0]} , {mat[1,1]} , {mat[1,2]} , " +
+                   $"{mat[2,0]} , {mat[2,1]} , {mat[2,2]}";
         }
     }
 }

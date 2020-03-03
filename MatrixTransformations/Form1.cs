@@ -104,10 +104,10 @@ namespace MatrixTransformations
             square3.Draw(e.Graphics, vb);
 
             vb.Clear();
-            //var r = Matrix.RotateMatrix(20);
+            var t = Matrix.TranslateMatrix(75, -25);
             foreach (var v in square4.vb)
             {
-                Vector v2 = v;
+                Vector v2 = t * v;
                 vb.Add(v2);
             }
             vb = ViewportTransformation(vb);

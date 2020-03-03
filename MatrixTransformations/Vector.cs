@@ -30,7 +30,7 @@ namespace MatrixTransformations
 
         public override string ToString()
         {
-            return $"X: {x}, Y: {y}";
+            return $"X: {x}, Y: {y}, W: {w}";
         }
     }
 }
