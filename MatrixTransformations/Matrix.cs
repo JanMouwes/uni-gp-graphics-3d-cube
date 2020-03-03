@@ -156,11 +156,11 @@ namespace MatrixTransformations
             return rotate;
         }
 
-        public static Matrix TranslateMatrix(float tx, float ty)
+        public static Matrix TranslateMatrix(Vector t)
         {
             Matrix translate = new Matrix();
-            translate.mat[0, 2] = tx;
-            translate.mat[1, 2] = ty;
+            translate.mat[0, 2] = t.x;
+            translate.mat[1, 2] = t.y;
 
             return translate;
         }
