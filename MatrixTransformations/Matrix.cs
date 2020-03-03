@@ -167,9 +167,18 @@ namespace MatrixTransformations
 
         public override string ToString()
         {
-            return $"{mat[0, 0]} , {mat[0, 1]} , {mat[0, 2]} , " +
-                   $"{mat[1, 0]} , {mat[1, 1]} , {mat[1, 2]} , " +
-                   $"{mat[2, 0]} , {mat[2, 1]} , {mat[2, 2]}";
+            StringBuilder sb = new StringBuilder();
+            for (int r = 0; r < mat.GetLength(0); r++)
+            {
+                for (int c = 0; c < mat.GetLength(1); c++)
+                {
+                    sb.Append($"{mat[r, c]} , ");
+                }
+
+                sb.Append("\n");
+            }
+
+            return sb.ToString();
         }
 
         public static Matrix ViewMatrix(float distToCam, float phi, float theta)
