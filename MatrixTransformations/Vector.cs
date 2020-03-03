@@ -7,10 +7,10 @@ namespace MatrixTransformations
     {
         public float x, y, w;
 
-        public Vector() : this(0, 0, 0)
+        public Vector() : this(0, 0, 1)
         { }
 
-        public Vector(float x, float y) : this(x, y, 0)
+        public Vector(float x, float y) : this(x, y, 1)
         { }
         public Vector(float x, float y, float w)
         {
