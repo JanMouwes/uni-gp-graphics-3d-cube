@@ -5,17 +5,22 @@ namespace MatrixTransformations
 {
     public class Vector
     {
-        public float x, y, w;
+        public float x, y, z, w;
 
-        public Vector() : this(0, 0, 1)
+        public Vector() : this(0, 0, 0, 1)
         { }
 
-        public Vector(float x, float y) : this(x, y, 1)
+        public Vector(float x, float y) : this(x, y, 1,1)
         { }
-        public Vector(float x, float y, float w)
+
+        public Vector(float x, float y, float z) : this(x, y, z, 1) 
+        { }
+
+        public Vector(float x, float y, float z, float w)
         {
             this.x = x;
             this.y = y;
+            this.z = z;
             this.w = w;
         }
 
@@ -30,7 +35,7 @@ namespace MatrixTransformations
 
         public override string ToString()
         {
-            return $"X: {x}, Y: {y}, W: {w}";
+            return $"X: {x}, Y: {y}, Z: {z}, W: {w}";
         }
     }
 }
