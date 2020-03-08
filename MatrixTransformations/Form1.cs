@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+using MatrixTransformations.Animation;
+using MatrixTransformations.Control;
 
 namespace MatrixTransformations
 {
@@ -17,37 +20,42 @@ namespace MatrixTransformations
         readonly AxisY y_axis;
         readonly AxisZ z_axis;
 
-        private Cube cube;
         private List<Vector> vb; // Vector buffer
 
         private CameraState cameraState;
 
-        public float TurnSpeed = 5;
+        private readonly KeyboardState keyboardState;
 
-        public Vector CubePosition;
-        private readonly Dictionary<Keys, bool> keyStates;
+        private Cube cube;
+        private CubeController cubeController;
+        private AnimationEngine animationEngine;
 
         public Form1()
         {
             InitializeComponent();
 
-            this.timer1.Interval = 1;
+            this.timer1.Interval = 50;
             this.timer1.Enabled = true;
 
             this.Width = WIDTH;
             this.Height = HEIGHT;
             this.DoubleBuffered = true;
 
-            this.CubePosition = new Vector(0, 0, 0);
-
             this.cameraState = CameraState.Default;
 
-            this.keyStates = new Dictionary<Keys, bool>();
+            this.keyboardState = new KeyboardState();
 
             // Define axes
             x_axis = new AxisX(3);
             y_axis = new AxisY(3);
             z_axis = new AxisZ(3);
+
+            this.cube = new Cube(Color.Purple);
+
+            this.cubeController = new CubeController(this.cube);
+
+
+            ResetAnimation();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -56,10 +64,8 @@ namespace MatrixTransformations
 
             DrawAxes(e);
 
-            this.cube = new Cube(Color.Purple);
-
-            this.vb = cube.vertexbuffer;
-            this.vb = ViewingPipeline(this.vb).ToList();
+            IEnumerable<Vector> transformedVectors = this.cubeController.TransformVectors(this.cube.vertexbuffer);
+            this.vb = ViewingPipeline(transformedVectors).ToList();
 
             cube.Draw(e.Graphics, this.vb);
 
@@ -69,13 +75,9 @@ namespace MatrixTransformations
         private void DrawAxes(PaintEventArgs e)
         {
             // Draw axes
-            //  vb = vector buffer
-            vb = ViewingPipeline(x_axis.vb).ToList();
-            x_axis.Draw(e.Graphics, vb);
-            vb = ViewingPipeline(y_axis.vb).ToList();
-            y_axis.Draw(e.Graphics, vb);
-            vb = ViewingPipeline(z_axis.vb).ToList();
-            z_axis.Draw(e.Graphics, vb);
+            x_axis.Draw(e.Graphics, ViewingPipeline(x_axis.vb).ToList());
+            y_axis.Draw(e.Graphics, ViewingPipeline(y_axis.vb).ToList());
+            z_axis.Draw(e.Graphics, ViewingPipeline(z_axis.vb).ToList());
         }
 
         private IEnumerable<string> GuiItems()
@@ -85,94 +87,55 @@ namespace MatrixTransformations
             yield return "Phi: "    + this.cameraState.Phi;
             yield return "Theta: "  + this.cameraState.Theta;
 
-            yield return "CubePosition: " + this.CubePosition;
+            yield return "\nTransformations: \n" + this.cubeController;
+            // yield return "Cube: \n"              + this.cube;
+
+            if (this.animationEngine.Enabled)
+            {
+                yield return "Animation enabled";
+                yield return "Animation: \n";
+                yield return this.animationEngine.ToString();
+            }
         }
 
         private void PaintGui(PaintEventArgs e)
         {
             Font font = new Font("Arial", 12, FontStyle.Bold);
 
-            int i = 0;
+            StringBuilder stringBuilder = new StringBuilder();
+            PointF p = new PointF(10, 16);
 
-            foreach (string guiItem in GuiItems())
-            {
-                const int x = 10;
-                int y = i * 16;
+            foreach (string guiItem in GuiItems()) { stringBuilder.Append(guiItem + '\n'); }
 
-                PointF p = new PointF(x, y);
-                e.Graphics.DrawString(guiItem, font, Brushes.Black, p);
-                i++;
-            }
+            e.Graphics.DrawString(stringBuilder.ToString(), font, Brushes.Black, p);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            float diff = this.TurnSpeed;
-
-            if (this.keyStates.ContainsKey(e.KeyCode)) { this.keyStates[e.KeyCode] = true; }
-            else { this.keyStates.Add(e.KeyCode, true); }
-
-            switch (e.KeyCode)
-            {
-                case Keys.C:
-                    this.Reset();
-
-                    break;
-                case Keys.Right:
-                    this.cameraState.ThetaVelocity = diff;
-
-                    break;
-                case Keys.Left:
-                    this.cameraState.ThetaVelocity = -diff;
-
-                    break;
-                case Keys.Up:
-                    this.cameraState.PhiVelocity = diff;
-
-                    break;
-                case Keys.Down:
-                    this.cameraState.PhiVelocity = -diff;
-
-                    break;
-                case Keys.Oemplus:
-                case Keys.PageUp:
-                    this.CubePosition.z += 1;
-
-                    break;
-                case Keys.OemMinus:
-                case Keys.PageDown:
-                    this.CubePosition.z -= 1;
-
-                    break;
-            }
+            this.keyboardState.SetIsKeyPressed(e.KeyCode, true);
 
             base.OnKeyDown(e);
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            this.keyboardState.SetIsKeyPressed(e.KeyCode, false);
+
+            if ((e.KeyCode & Keys.A) == Keys.A) { this.animationEngine.Enabled = !this.animationEngine.Enabled; }
+
+            base.OnKeyUp(e);
         }
 
         private void Reset()
         {
             this.cameraState = CameraState.Default;
-        }
-
-        protected override void OnScroll(ScrollEventArgs se)
-        {
-            base.OnScroll(se);
-
-            if (se.ScrollOrientation == ScrollOrientation.HorizontalScroll)
-            {
-                float change;
-
-                if (se.NewValue > se.OldValue) { change = 1; }
-                else { change = -1; }
-
-                this.CubePosition.z += change;
-            }
+            this.animationEngine.Enabled = false;
+            ResetAnimation();
         }
 
         public IEnumerable<Vector> ViewingPipeline(IEnumerable<Vector> vectorBuffer)
         {
             List<Vector> res = new List<Vector>();
-            Vector currentVector = new Vector();
 
             const float radianConverter = (float) Math.PI / 180f;
 
@@ -181,8 +144,8 @@ namespace MatrixTransformations
 
             foreach (Vector v in vectorBuffer)
             {
-                Matrix view = Matrix.ViewMatrix(1, phiRads, thetaRads);
-                currentVector = view * v;
+                Matrix view = Matrix.ViewMatrix(this.cameraState.Radius, phiRads, thetaRads);
+                Vector currentVector = view * v;
 
                 Matrix proj = Matrix.ProjectionMatrix(this.cameraState.D, currentVector.z);
                 currentVector = proj * currentVector;
@@ -212,9 +175,51 @@ namespace MatrixTransformations
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            this.cameraState.Update();
+            if (this.animationEngine.Enabled) { this.animationEngine.Update(); }
+            else
+            {
+                this.cubeController.Update(this.keyboardState);
+
+                this.cameraState.Update();
+            }
 
             this.Refresh();
+        }
+
+        private void DecreaseTheta(object obj, EventArgs args)
+        {
+            this.cameraState.Theta += 1;
+        }
+
+        private void IncreasePhi(object obj, EventArgs args)
+        {
+            this.cameraState.Phi += 1;
+        }
+
+        private void ResetAnimation()
+        {
+            this.animationEngine = new AnimationEngine();
+
+            this.animationEngine.AddPhase("Phase 1", new Phase1(this.cubeController));
+            this.animationEngine.AddPhase("Phase 2", new Phase2(this.cubeController));
+            this.animationEngine.AddPhase("Phase 3", new Phase3(this.cubeController));
+            this.timer1.Tick += DecreaseTheta;
+            
+            this.animationEngine.PhaseFinished += (phaseKey) =>
+            {
+                switch (phaseKey)
+                {
+                    case "Phase 2":
+                        this.timer1.Tick -= DecreaseTheta;
+                        this.timer1.Tick += IncreasePhi;
+
+                        break;
+                    case "Phase 3":
+                        this.timer1.Tick -= IncreasePhi;
+
+                        break;
+                }
+            };
         }
     }
 }

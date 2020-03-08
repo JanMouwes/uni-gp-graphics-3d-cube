@@ -2,14 +2,14 @@ namespace MatrixTransformations
 {
     public class CameraState
     {
-        private float theta;
-        private float phi = -10;
+        private float theta = -100f;
+        private float phi = -10f;
 
         /// <summary>
         /// Distance from the viewer's eye and the view pane.
         /// Used to determine scaling of objects.
         /// </summary>
-        public float D { get; set; } = 100; // 
+        public float D { get; set; } = 800;
 
         ///<summary>
         /// Distance from camera's position to (0,0,0)
@@ -23,7 +23,7 @@ namespace MatrixTransformations
         public float Theta
         {
             get => this.theta;
-            set => this.theta = (360 + value) % 360;
+            set => this.theta = value % 360;
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace MatrixTransformations
         public float Phi
         {
             get => this.phi;
-            set => this.phi = (360 + value) % 360;
+            set => this.phi = value % 360;
         }
 
         /// <summary>
