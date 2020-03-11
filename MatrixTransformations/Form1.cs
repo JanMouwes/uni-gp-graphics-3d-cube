@@ -121,7 +121,7 @@ namespace MatrixTransformations
         {
             this.keyboardState.SetIsKeyPressed(e.KeyCode, false);
 
-            if ((e.KeyCode & Keys.A) == Keys.A) { this.animationEngine.Enabled = !this.animationEngine.Enabled; }
+            // if ((e.KeyCode & Keys.A) == Keys.A) { this.animationEngine.Enabled = !this.animationEngine.Enabled; }
 
             base.OnKeyUp(e);
         }
@@ -203,8 +203,8 @@ namespace MatrixTransformations
             this.animationEngine.AddPhase("Phase 1", new Phase1(this.cubeController));
             this.animationEngine.AddPhase("Phase 2", new Phase2(this.cubeController));
             this.animationEngine.AddPhase("Phase 3", new Phase3(this.cubeController));
-            this.timer1.Tick += DecreaseTheta;
-            
+            // this.timer1.Tick += DecreaseTheta;
+
             this.animationEngine.PhaseFinished += (phaseKey) =>
             {
                 switch (phaseKey)

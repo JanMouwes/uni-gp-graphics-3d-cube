@@ -59,7 +59,7 @@ namespace MatrixTransformations
         public static CameraState Default =>
             new CameraState
             {
-                D = 100,
+                D = 800,
                 Radius = 10,
                 Theta = -100,
                 Phi = -10

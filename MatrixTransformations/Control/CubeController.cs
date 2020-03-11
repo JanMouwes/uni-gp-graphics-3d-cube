@@ -81,7 +81,7 @@ namespace MatrixTransformations.Control
 
         public IEnumerable<Vector> TransformVectors(IEnumerable<Vector> input)
         {
-            foreach (Vector vector in input) { yield return TranslateMatrix * ScaleMatrix * RotateMatrix * vector; }
+            foreach (Vector vector in input) { yield return TranslateMatrix * RotateMatrix * ScaleMatrix * vector; }
         }
 
         public override string ToString()
