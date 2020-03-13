@@ -52,7 +52,7 @@ namespace MatrixTransformations
 
             this.cube = new Cube(Color.Purple);
 
-            this.cubeController = new CubeController(this.cube);
+            this.cubeController = new CubeController();
 
 
             ResetAnimation();
@@ -122,6 +122,7 @@ namespace MatrixTransformations
             this.keyboardState.SetIsKeyPressed(e.KeyCode, false);
 
             // if ((e.KeyCode & Keys.A) == Keys.A) { this.animationEngine.Enabled = !this.animationEngine.Enabled; }
+            if ((e.KeyCode & Keys.C) == Keys.C) { this.Reset(); }
 
             base.OnKeyUp(e);
         }
@@ -129,6 +130,7 @@ namespace MatrixTransformations
         private void Reset()
         {
             this.cameraState = CameraState.Default;
+            this.cubeController = CubeController.Default;
             this.animationEngine.Enabled = false;
             ResetAnimation();
         }

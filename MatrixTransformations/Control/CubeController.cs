@@ -6,12 +6,8 @@ namespace MatrixTransformations.Control
 {
     public class CubeController
     {
-        private readonly Cube cube;
-
-        public CubeController(Cube cube)
+        public CubeController()
         {
-            this.cube = cube;
-            this.Scale = 1;
             this.TranslationVector = new Vector();
         }
 
@@ -26,7 +22,7 @@ namespace MatrixTransformations.Control
         public float RotateY { get; set; }
         public float RotateZ { get; set; }
 
-        public float Scale { get; set; }
+        public float Scale { get; set; } = 1;
         public Vector TranslationVector { get; }
 
         public Matrix ScaleMatrix => Matrix.ScaleMatrix(Scale);
@@ -83,6 +79,8 @@ namespace MatrixTransformations.Control
         {
             foreach (Vector vector in input) { yield return TranslateMatrix * RotateMatrix * ScaleMatrix * vector; }
         }
+
+        public static CubeController Default => new CubeController() { Scale = 1};
 
         public override string ToString()
         {
