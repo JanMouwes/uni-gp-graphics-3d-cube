@@ -120,9 +120,9 @@ namespace MatrixTransformations
         {
             this.keyboardState.SetIsKeyPressed(e.KeyCode, false);
 
-            if ((e.KeyCode & Keys.A) == Keys.A) { this.animationEngine.Enabled = !this.animationEngine.Enabled; }
+            if (e.KeyCode  == Keys.A) { this.animationEngine.Enabled = !this.animationEngine.Enabled; }
 
-            if ((e.KeyCode & Keys.C) == Keys.C) { this.Reset(); }
+            if (e.KeyCode== Keys.C) { this.Reset(); }
 
             base.OnKeyUp(e);
         }
