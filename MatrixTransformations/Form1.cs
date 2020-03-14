@@ -182,7 +182,7 @@ namespace MatrixTransformations
             //    The requirements did not specify input should be disabled during animation
             this.cubeController.Update(this.keyboardState);
 
-            this.cameraState.Update();
+            this.cameraState.Update(this.keyboardState);
 
             this.Refresh();
         }
