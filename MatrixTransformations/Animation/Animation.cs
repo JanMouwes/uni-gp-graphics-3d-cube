@@ -8,8 +8,6 @@ namespace MatrixTransformations.Animation
 
         public event AnimationFinishedHandler Finished;
         
-        public abstract void Reset();
-
         protected void InvokeFinished()
         {
             this.Finished?.Invoke(this);

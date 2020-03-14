@@ -28,7 +28,7 @@ namespace MatrixTransformations
 
         private Cube cube;
         private CubeController cubeController;
-        private AnimationEngine animationEngine;
+        private readonly AnimationEngine animationEngine;
 
         public Form1()
         {
@@ -54,8 +54,8 @@ namespace MatrixTransformations
 
             this.cubeController = new CubeController();
 
-
-            ResetAnimation();
+            this.animationEngine = new AnimationEngine(this.cameraState, this.cubeController);
+            this.animationEngine.Finished += ResetAnimation;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -93,7 +93,6 @@ namespace MatrixTransformations
             if (this.animationEngine.Enabled)
             {
                 yield return "Animation enabled";
-                yield return "Animation: \n";
                 yield return this.animationEngine.ToString();
             }
         }
@@ -121,7 +120,8 @@ namespace MatrixTransformations
         {
             this.keyboardState.SetIsKeyPressed(e.KeyCode, false);
 
-            // if ((e.KeyCode & Keys.A) == Keys.A) { this.animationEngine.Enabled = !this.animationEngine.Enabled; }
+            if ((e.KeyCode & Keys.A) == Keys.A) { this.animationEngine.Enabled = !this.animationEngine.Enabled; }
+
             if ((e.KeyCode & Keys.C) == Keys.C) { this.Reset(); }
 
             base.OnKeyUp(e);
@@ -178,50 +178,18 @@ namespace MatrixTransformations
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (this.animationEngine.Enabled) { this.animationEngine.Update(); }
-            else
-            {
-                this.cubeController.Update(this.keyboardState);
+            
+            //    The requirements did not specify input should be disabled during animation
+            this.cubeController.Update(this.keyboardState);
 
-                this.cameraState.Update();
-            }
+            this.cameraState.Update();
 
             this.Refresh();
         }
 
-        private void DecreaseTheta(object obj, EventArgs args)
-        {
-            this.cameraState.Theta += 1;
-        }
-
-        private void IncreasePhi(object obj, EventArgs args)
-        {
-            this.cameraState.Phi += 1;
-        }
-
         private void ResetAnimation()
         {
-            this.animationEngine = new AnimationEngine();
-
-            this.animationEngine.AddPhase("Phase 1", new Phase1(this.cubeController));
-            this.animationEngine.AddPhase("Phase 2", new Phase2(this.cubeController));
-            this.animationEngine.AddPhase("Phase 3", new Phase3(this.cubeController));
-            // this.timer1.Tick += DecreaseTheta;
-
-            this.animationEngine.PhaseFinished += (phaseKey) =>
-            {
-                switch (phaseKey)
-                {
-                    case "Phase 2":
-                        this.timer1.Tick -= DecreaseTheta;
-                        this.timer1.Tick += IncreasePhi;
-
-                        break;
-                    case "Phase 3":
-                        this.timer1.Tick -= IncreasePhi;
-
-                        break;
-                }
-            };
+            this.animationEngine.Reset(this.cubeController, this.cameraState);
         }
     }
 }

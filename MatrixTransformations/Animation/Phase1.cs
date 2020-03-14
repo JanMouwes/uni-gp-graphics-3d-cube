@@ -7,11 +7,10 @@ namespace MatrixTransformations.Animation
     {
         private CubeController cubeController;
         private Action update;
-        private bool finished;
 
         private void ApproachTarget()
         {
-            const float target = 1.1f;
+            const float target = 1.5f;
 
             this.cubeController.Scale += .01f;
 
@@ -24,11 +23,12 @@ namespace MatrixTransformations.Animation
 
         private void DepartTarget()
         {
+            const float target = 1;
             this.cubeController.Scale += -.01f;
 
-            if (this.cubeController.Scale <= 1)
+            if (this.cubeController.Scale <= target)
             {
-                this.cubeController.Scale = 1;
+                this.cubeController.Scale = target;
                 InvokeFinished();
             }
         }
@@ -43,11 +43,6 @@ namespace MatrixTransformations.Animation
         public override void Update()
         {
             this.update();
-        }
-
-        public override void Reset()
-        {
-            this.finished = false;
         }
     }
 }

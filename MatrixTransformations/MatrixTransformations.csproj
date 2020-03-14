@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="Animation\Animation.cs" />
     <Compile Include="Animation\AnimationEngine.cs" />
-    <Compile Include="Animation\CompositeAnimation.cs" />
     <Compile Include="Animation\Phase1.cs" />
     <Compile Include="Animation\Phase2.cs" />
     <Compile Include="Animation\Phase3.cs" />

@@ -7,7 +7,6 @@ namespace MatrixTransformations.Animation
     {
         private CubeController cubeController;
         private Action update;
-        private bool finished;
         private const float STEP_SIZE = 1f;
 
         private void ApproachTarget()
@@ -41,13 +40,6 @@ namespace MatrixTransformations.Animation
         public override void Update()
         {
             this.update();
-        }
-
-        public bool IsFinished() => this.finished;
-
-        public override void Reset()
-        {
-            this.finished = false;
         }
     }
 }

@@ -1,73 +1,101 @@
 using System;
 using System.Collections.Generic;
+using MatrixTransformations.Control;
 
 namespace MatrixTransformations.Animation
 {
-    public delegate void PhaseEndedHandler(string phaseKey);
-
     public class AnimationEngine
     {
+        private int PhaseCounter { get; set; }
+
         public bool Enabled { get; set; }
+        public Animation Current { get; set; }
 
-        public event PhaseEndedHandler PhaseFinished;
+        private Phase1 phase1;
+        private Phase2 phase2;
+        private Phase3 phase3;
+        private ResetPhase resetPhase;
 
-        private readonly LinkedList<AnimationPhase> animationQueue;
-        private LinkedListNode<AnimationPhase> currentPhaseNode;
+        private CameraState cameraState;
 
-        public AnimationPhase CurrentPhase => this.currentPhaseNode.Value;
+        private event Action update;
+        public event Action Finished;
 
-        public AnimationEngine()
+        public AnimationEngine(CameraState cameraState, CubeController cubeController)
         {
-            this.animationQueue = new LinkedList<AnimationPhase>();
+            Reset(cubeController, cameraState);
         }
 
-        public void AddPhase(string title, Animation animation)
+        public void Reset(CubeController cubeController, CameraState newCameraState)
         {
-            this.animationQueue.AddLast(new AnimationPhase(title, animation));
+            PhaseCounter = 1;
+            
+            this.cameraState = newCameraState;
 
-            if (this.currentPhaseNode == null) { this.currentPhaseNode = this.animationQueue.First; }
+            this.phase1 = new Phase1(cubeController);
+            this.phase2 = new Phase2(cubeController);
+            this.phase3 = new Phase3(cubeController);
+            this.resetPhase = new ResetPhase(newCameraState);
+
+            Current = this.phase1;
+            Current.Finished += HandleFinished;
+
+            this.update = null;
+            update += DecreaseTheta;
+            update += Current.Update;
+        }
+
+
+        private void DecreaseTheta() => this.cameraState.Theta -= 1;
+
+        private void IncreasePhi() => this.cameraState.Phi += 1;
+
+        private void HandleFinished(Animation finishedAnimation)
+        {
+            Current.Finished -= HandleFinished;
+
+            this.update -= Current.Update;
+
+            switch (this.PhaseCounter)
+            {
+                case 1:
+                    Current = this.phase2;
+
+                    break;
+                case 2:
+                    Current = this.phase3;
+
+                    update -= DecreaseTheta;
+                    update += IncreasePhi;
+
+                    break;
+                case 3:
+                    Current = this.resetPhase;
+                    update -= IncreasePhi;
+
+                    break;
+                case 4:
+                    this.Finished?.Invoke();
+                    
+                    return; // Stop the current animation
+            }
+
+            this.update += Current.Update;
+            this.Current.Finished += HandleFinished;
+
+            this.PhaseCounter++;
         }
 
         public void Update()
         {
             if (!Enabled) { return; }
 
-            this.CurrentPhase.Animation.Update();
-
-            Console.WriteLine(CurrentPhase.Title);
-
-            this.CurrentPhase.Animation.Finished += OnAnimationFinished;
+            update?.Invoke();
         }
 
-        private void OnAnimationFinished(Animation animation)
+        public override string ToString()
         {
-            this.CurrentPhase.Animation.Finished -= OnAnimationFinished;
-
-            PhaseFinished?.Invoke(CurrentPhase.Title);
-            
-            if (this.currentPhaseNode.Next != null)
-            {
-                this.currentPhaseNode = this.currentPhaseNode.Next;
-            }
-            else
-            {
-                this.Enabled = false;
-                this.currentPhaseNode = null;
-            }
-        }
-
-
-        public struct AnimationPhase
-        {
-            public string Title { get; }
-
-            public Animation Animation { get; }
-
-            public AnimationPhase(string title, Animation animation)
-            {
-                this.Title = title;
-                this.Animation = animation;
-            }
+            return "Current phase: " + PhaseCounter;
         }
     }
 }
