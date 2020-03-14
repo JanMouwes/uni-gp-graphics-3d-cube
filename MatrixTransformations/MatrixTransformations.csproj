@@ -49,9 +49,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation\Animation.cs" />
+    <Compile Include="Animation\AnimationEngine.cs" />
+    <Compile Include="Animation\Phase1.cs" />
+    <Compile Include="Animation\Phase2.cs" />
+    <Compile Include="Animation\Phase3.cs" />
+    <Compile Include="Animation\ResetPhase.cs" />
     <Compile Include="AxisX.cs" />
     <Compile Include="AxisY.cs" />
     <Compile Include="AxisZ.cs" />
+    <Compile Include="CameraState.cs" />
+    <Compile Include="Control\CubeController.cs" />
+    <Compile Include="Control\KeyboardState.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
