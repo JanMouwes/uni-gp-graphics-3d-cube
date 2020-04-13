@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 
 namespace MatrixTransformations
 {
@@ -61,12 +62,25 @@ namespace MatrixTransformations
             g.DrawLine(pen, vb[2].x, vb[2].y, vb[6].x, vb[6].y);    //2 -> 6
             g.DrawLine(pen, vb[3].x, vb[3].y, vb[7].x, vb[7].y);    //3 -> 7
 
-            Font font = new Font("Arial", 12, FontStyle.Bold);
+            Font font = new Font("Arial", 10, FontStyle.Bold);
             for (int i = 0; i < 8; i++)
             {
                 PointF p = new PointF(vb[i + 8].x, vb[i + 8].y);
                 g.DrawString(i.ToString(), font, Brushes.Black, p);
             }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < 8; i++)
+            {
+                stringBuilder.Append(i + ": ");
+                stringBuilder.Append(this.vertexbuffer[i]);
+                stringBuilder.Append('\n');
+            }
+
+            return stringBuilder.ToString();
         }
     }   
 }

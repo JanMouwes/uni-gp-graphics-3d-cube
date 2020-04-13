@@ -1,15 +1,18 @@
+using System.Windows.Forms;
+using MatrixTransformations.Control;
+
 namespace MatrixTransformations
 {
     public class CameraState
     {
-        private float theta;
-        private float phi = -10;
+        private float theta = -100f;
+        private float phi = -10f;
 
         /// <summary>
         /// Distance from the viewer's eye and the view pane.
         /// Used to determine scaling of objects.
         /// </summary>
-        public float D { get; set; } = 100; // 
+        public float D { get; set; } = 800;
 
         ///<summary>
         /// Distance from camera's position to (0,0,0)
@@ -23,7 +26,7 @@ namespace MatrixTransformations
         public float Theta
         {
             get => this.theta;
-            set => this.theta = (360 + value) % 360;
+            set => this.theta = value % 360;
         }
 
         /// <summary>
@@ -33,33 +36,34 @@ namespace MatrixTransformations
         public float Phi
         {
             get => this.phi;
-            set => this.phi = (360 + value) % 360;
+            set => this.phi = value % 360;
         }
 
-        /// <summary>
-        /// Change of Theta in degrees per tick.
-        /// </summary>
-        public float ThetaVelocity { get; set; }
-
-        /// <summary>
-        /// Change of Phi in degrees per tick.
-        /// </summary>
-        public float PhiVelocity { get; set; }
-
-        public void Update()
+        public void Update(KeyboardState keyboardState)
         {
-            this.Phi += PhiVelocity;
-            this.Theta += ThetaVelocity;
+            bool isShiftPressed = keyboardState.IsKeyPressed(Keys.ShiftKey);
 
-            //    Decay
-            ThetaVelocity *= .9f;
-            PhiVelocity *= .9f;
+            if (keyboardState.IsKeyPressed(Keys.R))
+            {
+                const float stepSize = .2f;
+                Radius += isShiftPressed ? stepSize : -stepSize;
+            }
+            if (keyboardState.IsKeyPressed(Keys.D))
+            {
+                const float stepSize = 5f;
+                D += isShiftPressed ? stepSize : -stepSize;
+            }
+            if (keyboardState.IsKeyPressed(Keys.T))
+            {
+                const float stepSize = 1;
+                Theta += isShiftPressed ? stepSize : -stepSize;
+            }
         }
 
         public static CameraState Default =>
             new CameraState
             {
-                D = 100,
+                D = 800,
                 Radius = 10,
                 Theta = -100,
                 Phi = -10
