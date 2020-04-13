@@ -2,3 +2,5 @@
 /.vs/
 /MatrixTransformations/bin/
 /MatrixTransformations/obj/
+/MatrixTransformations.Tests/obj/
+/MatrixTransformations.Tests/bin/Debug/netcoreapp2.1/
